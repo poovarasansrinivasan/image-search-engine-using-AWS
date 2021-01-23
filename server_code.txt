@@ -1,0 +1,14 @@
+import zmq
+import gensim
+context = zmq.Context ()
+socket = context.socket (zmq.REP)
+socket.bind("tcp://*:5555")
+model = gensim.models.KeyedVectors.load_word2vec_format('s3://samven/GoogleNews-vectors-negative300.bin', binary=True)
+
+
+while True:
+    msg = socket.recv()
+    print ("from client : ", msg) 
+    mmg=model.most_similar(msg,topn=30)
+    res = str(mmg)
+    socket.send(res)
